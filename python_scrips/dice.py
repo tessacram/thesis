@@ -179,4 +179,4 @@ class Dice:
                         copy[i] = prev_value
                         break
                     prev_value = new_value
-                cf[i] = copy[i]
+                cf[i] = torch.clone(copy[i])
