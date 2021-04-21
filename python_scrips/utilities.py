@@ -1,6 +1,6 @@
 import torch
 from os import system
-from models import MLP
+from .models import MLP
 
 
 class GenerateALotCFs:
