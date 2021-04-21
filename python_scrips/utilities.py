@@ -1,6 +1,7 @@
 import torch
 from os import system
 from .models import MLP
+from IPython.display import clear_output
 
 
 class GenerateALotCFs:
@@ -16,7 +17,7 @@ class GenerateALotCFs:
         cfs = torch.zeros((n_instances, n_cfs, data.shape[1]))
 
         for n_instance in range(n_instances):
-            _ = system('clear')
+            clear_output(wait=True)
             print('instance ' + str(n_instance + 1) + '/' + str(n_instances))
             print('percentage: ' + str(round(n_instance * 100 / n_instances, 2)) + '%')
 
@@ -26,7 +27,8 @@ class GenerateALotCFs:
             if n_instance % 100 == 0:
                 torch.save(cfs, 'backup_rename_this_bitch.pt')
 
-        _ = system('clear')
+        # _ = system('clear')
+        clear_output(wait=True)
         print('Done!')
 
         return cfs
