@@ -48,8 +48,8 @@ class Data:
 
     def augmentation(self, x, y):
 
-        self.data_df_train = pd.concat([self.data_df_train, self.torch_to_df(x)])
-        self.target_df_train = pd.concat([self.target_df_train, self.torch_to_df(y)])
+        # self.data_df_train = pd.concat([self.data_df_train, self.torch_to_df(x)])
+        # self.target_df_train = pd.concat([self.target_df_train, self.torch_to_df(y)])
         self.len_train = self.len_train + len(y)
         self.data_torch_train = torch.cat((self.data_torch_train, x), 0)
         self.target_torch_train = torch.cat((self.target_torch_train, y))

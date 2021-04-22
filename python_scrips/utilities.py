@@ -26,29 +26,29 @@ class CFUtilities:
 
         if data == 'train':
             instances = self.d.data_torch_train
-            n_instances = self.instances.shape[0]
+            n_instances = instances.shape[0]
 
         elif data == 'test':
             instances = self.d.data_torch_test
-            n_instances = self.instances.shape[0]
+            n_instances = instances.shape[0]
 
         else:
             print("data is either train or test")
             return None
 
-        cfs = torch.zeros((n_instances, n_cfs, self.d.shape[1]))
+        cfs = torch.zeros((n_instances, n_cfs, instances.shape[1]))
 
         for n_instance in range(n_instances):
-            clear_output(wait=True)
-            print('instance ' + str(n_instance + 1) + '/' + str(n_instances))
-            print('percentage: ' + str(round(n_instance * 100 / n_instances, 2)) + '%')
+            # clear_output(wait=True)
+            # print('instance ' + str(n_instance + 1) + '/' + str(n_instances))
+            # print('percentage: ' + str(round(n_instance * 100 / n_instances, 2)) + '%')
 
             x = instances[n_instance]
             cfs[n_instance] = self.exp.generate_cfs(x, total_cfs=n_cfs)
 
             if n_instance % 100 == 0:
                 torch.save(cfs, 'backup_cfs.pt')
-        clear_output(wait=True)
+        # clear_output(wait=True)
         print('Done!')
 
         return cfs
@@ -67,13 +67,13 @@ class CFUtilities:
 
         n_instances = instances.shape[0]
 
-        extra_datapoints = torch.zeros((n_instances, self.d.shape[1]))
+        extra_datapoints = torch.zeros((n_instances, instances.shape[1]))
         targets = torch.zeros(n_instances)
 
         for n_instance in range(n_instances):
-            clear_output(wait=True)
-            print('instance ' + str(n_instance + 1) + '/' + str(n_instances))
-            print('percentage: ' + str(round(n_instance * 100 / n_instances, 2)) + '%')
+            # clear_output(wait=True)
+            # print('instance ' + str(n_instance + 1) + '/' + str(n_instances))
+            # print('percentage: ' + str(round(n_instance * 100 / n_instances, 2)) + '%')
 
             x = instances[n_instance]
             points = self.exp.generate_cfs(x, total_cfs=n_cfs, f_fair=f_fair)
@@ -85,7 +85,7 @@ class CFUtilities:
                 torch.save(extra_datapoints, 'backup_data_augmentation.pt')
 
         # _ = system('clear')
-        clear_output(wait=True)
+        # clear_output(wait=True)
         print('Done!')
 
         return extra_datapoints, targets
@@ -102,15 +102,16 @@ class CFUtilities:
 
         cfs_per_instance = cfs.shape[1]
         n_features = cfs.shape[2]
-        n_pairs = len(instances) * cfs_per_instance
+        n_instances = len(instances)
+        n_pairs = n_instances * cfs_per_instance
 
         n_pair = 0
-        pairs = torch.zeros(n_pairs, n_features)
+        pairs = torch.zeros((n_pairs, n_features))
         targets = torch.zeros(n_pairs)
 
         n_fair_cfs = 0
 
-        for i in range(n_pairs):
+        for i in range(n_instances):
 
             cfs[i] = self.d.arg_max(cfs[i])
             df = self.d.torch_to_df(cfs[i])
@@ -152,9 +153,9 @@ class ClassifierTraining:
             y_test = y[split:]
 
         else:
-
-            x_train = d.data_torch_train
-            x_test = d.data_torch_test
+            print("we have detached the things, don't worry!")
+            x_train = d.data_torch_train.detach()
+            x_test = d.data_torch_test.detach()
             y_train = d.target_torch_train
             y_test = d.target_torch_test
 
