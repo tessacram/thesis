@@ -46,6 +46,14 @@ class Data:
         # SAVE MADS
         self.mads = np.concatenate((np.ones(sum(self.enc_length.values)), self.get_MAD().values))
 
+    def augmentation(self, x, y):
+
+        self.data_df_train = pd.concat([self.data_df_train, self.torch_to_df(x)])
+        self.target_df_train = pd.concat([self.target_df_train, self.torch_to_df(y)])
+        self.len_train = self.len_train + len(y)
+        self.data_torch_train = torch.cat((self.data_torch_train, x), 0)
+        self.target_torch_train = torch.cat((self.target_torch_train, y))
+
     def df_to_torch(self, df):
         """ from dataframe to one-hot-encoded torch vector(s) """
         df = df.copy()
@@ -185,7 +193,7 @@ class Compas(Data):
 
 class Import(Data):
 
-    def __init__(self, data_df, cont_indices, frac_train=0.75,):
+    def __init__(self, data_df, cont_indices, frac_train=0.75):
 
         self.data_df = data_df
         self.data_df = self.data_df.sample(frac=1, random_state=1).reset_index(drop=True)
