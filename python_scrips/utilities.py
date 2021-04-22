@@ -13,7 +13,7 @@ class CFUtilities:
         self.exp = exp
         self.d = d
 
-    def generate_cfs(self, exp=None, n_cfs=5):
+    def generate_cfs(self, data, exp=None, n_cfs=5):
 
         if exp is not None:
             self.exp = exp
@@ -24,7 +24,17 @@ class CFUtilities:
 
         self.d = self.exp.data
 
-        n_instances = self.d.shape[0]
+        if data == 'train':
+            instances = self.d.data_torch_train
+            n_instances = self.instances.shape[0]
+
+        elif data == 'test':
+            instances = self.d.data_torch_test
+            n_instances = self.instances.shape[0]
+
+        else:
+            print("data is either train or test")
+            return None
 
         cfs = torch.zeros((n_instances, n_cfs, self.d.shape[1]))
 
@@ -33,13 +43,11 @@ class CFUtilities:
             print('instance ' + str(n_instance + 1) + '/' + str(n_instances))
             print('percentage: ' + str(round(n_instance * 100 / n_instances, 2)) + '%')
 
-            x = self.d[n_instance]
+            x = instances[n_instance]
             cfs[n_instance] = self.exp.generate_cfs(x, total_cfs=n_cfs)
 
             if n_instance % 100 == 0:
                 torch.save(cfs, 'backup_cfs.pt')
-
-        # _ = system('clear')
         clear_output(wait=True)
         print('Done!')
 
@@ -55,8 +63,9 @@ class CFUtilities:
             return None
 
         self.d = self.exp.data
+        instances = self.d.data_torch_train
 
-        n_instances = self.d.shape[0]
+        n_instances = instances.shape[0]
 
         extra_datapoints = torch.zeros((n_instances, self.d.shape[1]))
         targets = torch.zeros(n_instances)
@@ -66,7 +75,7 @@ class CFUtilities:
             print('instance ' + str(n_instance + 1) + '/' + str(n_instances))
             print('percentage: ' + str(round(n_instance * 100 / n_instances, 2)) + '%')
 
-            x = self.d[n_instance]
+            x = instances[n_instance]
             points = self.exp.generate_cfs(x, total_cfs=n_cfs, f_fair=f_fair)
 
             extra_datapoints[n_instance] = points[random.randint(0, 2)]
@@ -81,12 +90,15 @@ class CFUtilities:
 
         return extra_datapoints, targets
 
-
-
     def collect_feedback(self, cfs, instances=None):
 
         if instances is None:
             instances = self.d.data_torch_train
+
+        if instances == 'train':
+            instances = self.d.data_torch_train
+        if instances == 'test':
+            instances = self.d.data_torch_test
 
         cfs_per_instance = cfs.shape[1]
         n_features = cfs.shape[2]
@@ -121,18 +133,13 @@ class CFUtilities:
         return pairs, targets, n_fair_cfs/n_pairs
 
 
-
-
-
-
-
 class ClassifierTraining:
 
     def __init__(self, hidden_dim = 100):
 
         self.hidden_dim = hidden_dim
 
-    def train(self, d=None, x=None, y=None):
+    def train(self, d=None, x=None, y=None, tot_epoch=501):
 
         if d is None:
 
@@ -165,7 +172,6 @@ class ClassifierTraining:
 
         ### TRAIN ###
         mlp_model.train()  # here sets the PyTorch module to train mode.
-        tot_epoch = 501
         for epoch in range(tot_epoch):
             optimizer.zero_grad()
             # Forward pass

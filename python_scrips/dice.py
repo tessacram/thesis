@@ -6,7 +6,7 @@ from IPython.display import clear_output
 
 class Dice:
 
-    def __init__(self, data, classifier, device="cuda"):
+    def __init__(self, data, classifier, device="cpu"):
 
         self.device = device
 

@@ -113,9 +113,11 @@ class Data:
 
 class Income(Data):
 
-    def __init__(self, frac_train=0.75):
+    def __init__(self, frac_train=0.75, total_instances=None):
 
         self.data_df = self.get_df()
+        if total_instances is not None:
+            self.data_df = self.data_df.iloc[0:total_instances, :]
         self.cont_indices = [0, 7]
         super().__init__(self.data_df, self.cont_indices, frac_train=frac_train)
 
