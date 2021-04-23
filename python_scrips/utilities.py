@@ -131,7 +131,7 @@ class CFUtilities:
 
                 n_pair += 1
 
-        return pairs, targets, n_fair_cfs/n_pairs
+        return pairs, targets, (n_fair_cfs/n_pairs)
 
 
 class ClassifierTraining:
@@ -140,7 +140,7 @@ class ClassifierTraining:
 
         self.hidden_dim = hidden_dim
 
-    def train(self, d=None, x=None, y=None, tot_epoch=501):
+    def train(self, d=None, x=None, y=None, tot_epoch=501, print_proces=True):
 
         if d is None:
 
@@ -154,8 +154,8 @@ class ClassifierTraining:
 
         else:
             print("we have detached the things, don't worry!")
-            x_train = d.data_torch_train.detach()
-            x_test = d.data_torch_test.detach()
+            x_train = d.data_torch_train
+            x_test = d.data_torch_test
             y_train = d.target_torch_train
             y_test = d.target_torch_test
 
@@ -180,7 +180,7 @@ class ClassifierTraining:
             # Compute Loss
             loss = criterion(y_train_hat.squeeze(), y_train)
 
-            if epoch % 100 == 0:
+            if epoch % 100 == 0 and print_proces is True:
                 y_test_hat = mlp_model(x_test)
                 print('Epoch: {} -- train loss: {} -- accuracy (test set): {}'.format(epoch, round(loss.item(), 3),
                                                                                       mlp_model.accuracy(y_test_hat,
