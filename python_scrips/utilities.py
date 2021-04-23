@@ -1,9 +1,7 @@
 import torch
 import random
 from .models import MLP
-from IPython.display import clear_output
-
-
+from IPython.display import display
 
 
 class CFUtilities:
@@ -38,7 +36,10 @@ class CFUtilities:
 
         cfs = torch.zeros((n_instances, n_cfs, instances.shape[1]))
 
+        process = display('Here we go!', display_id=True)
+
         for n_instance in range(n_instances):
+            process.update("instance {} out of {}".format((n_instance + 1), n_instances))
             # clear_output(wait=True)
             # print('instance ' + str(n_instance + 1) + '/' + str(n_instances))
             # print('percentage: ' + str(round(n_instance * 100 / n_instances, 2)) + '%')
@@ -70,7 +71,10 @@ class CFUtilities:
         extra_datapoints = torch.zeros((n_instances, instances.shape[1]))
         targets = torch.zeros(n_instances)
 
+        process = display('Here we go!', display_id=True)
+
         for n_instance in range(n_instances):
+            process.update("instance {} out of {}".format((n_instance + 1), n_instances))
             # clear_output(wait=True)
             # print('instance ' + str(n_instance + 1) + '/' + str(n_instances))
             # print('percentage: ' + str(round(n_instance * 100 / n_instances, 2)) + '%')
@@ -140,7 +144,7 @@ class ClassifierTraining:
 
         self.hidden_dim = hidden_dim
 
-    def train(self, d=None, x=None, y=None, tot_epoch=501, print_proces=True):
+    def train(self, d=None, x=None, y=None, tot_epoch=501, print_process=True):
 
         if d is None:
 
@@ -153,7 +157,6 @@ class ClassifierTraining:
             y_test = y[split:]
 
         else:
-            print("we have detached the things, don't worry!")
             x_train = d.data_torch_train
             x_test = d.data_torch_test
             y_train = d.target_torch_train
@@ -169,7 +172,8 @@ class ClassifierTraining:
         mlp_model.eval()  # here sets the PyTorch module to evaluation mode.
         y_train_hat = mlp_model(x_train)
         before_train = criterion(y_train_hat.squeeze(), y_train)
-        print('Test loss before training', before_train.item())
+        if print_process:
+            print('Test loss before training', before_train.item())
 
         ### TRAIN ###
         mlp_model.train()  # here sets the PyTorch module to train mode.
@@ -180,7 +184,7 @@ class ClassifierTraining:
             # Compute Loss
             loss = criterion(y_train_hat.squeeze(), y_train)
 
-            if epoch % 100 == 0 and print_proces is True:
+            if epoch % 100 == 0 and print_process:
                 y_test_hat = mlp_model(x_test)
                 print('Epoch: {} -- train loss: {} -- accuracy (test set): {}'.format(epoch, round(loss.item(), 3),
                                                                                       mlp_model.accuracy(y_test_hat,
@@ -194,7 +198,9 @@ class ClassifierTraining:
         mlp_model.eval()
         y_test_hat = mlp_model(x_test)
         after_train = criterion(y_test_hat.squeeze(), y_test)
-        print('Test loss after Training', after_train.item())
+
+        if print_process:
+            print('Test loss after Training', after_train.item())
 
         print('The accuracy scrore on the test set:', mlp_model.accuracy(y_test_hat, y_test))
 
