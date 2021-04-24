@@ -129,10 +129,10 @@ class Dice:
         K = torch.ones((self.total_cfs, self.total_cfs))
         for i in range(self.total_cfs):
             for j in range(self.total_cfs):
+                K[(i, j)] = 1 / (1 + self.compute_distance(self.cfs[i], self.cfs[j]))
+                    
                 if i == j:
-                    K[(i, j)] = 1.0001
-                else:
-                    K[(i, j)] = 1 / (1 + self.compute_distance(self.cfs[i], self.cfs[j]))
+                    K[(i, j)] += 0.0001
 
         return torch.det(K)
 
