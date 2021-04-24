@@ -186,9 +186,10 @@ class Income(Data):
 
 class Compas(Data):
 
-    def __init__(self, data, frac_train=0.75, total_instances=None):
+    def __init__(self, frac_train=0.75, total_instances=None, path="/Users/tessa/Documents/artificial_intelligence/thesis/learning_to_be_fair/fresh_start/data/compas_data_clean.csv"):
 
-        df = pd.read_csv("/Users/tessa/Documents/artificial_intelligence/thesis/learning_to_be_fair/fresh_start/data/compas_data_clean.csv")
+        df = pd.read_csv(path)
+        df = df.rename(columns={"sex": "gender"})
         self.data_df = df.drop(columns=['Unnamed: 0'])
         self.data_df = self.data_df.sample(frac=1, random_state=1).reset_index(drop=True)
         if total_instances is not None:
