@@ -30,7 +30,7 @@ class Dice:
 
     def generate_cfs(self, x, total_cfs=3, lr=0.01, max_iterations=1001, distance_weight=0.5,
                      diversity_weight=1, reg_weight=0.1, output='torch', print_progress=False,
-                     f_fair=None):
+                     f_fair=None, posthoc=True):
         """ generates counterfactuals
 
         input:
@@ -71,9 +71,13 @@ class Dice:
 
             optimizer.zero_grad()
 
-        self.do_posthoc_sparsity_enhancement()
-
         self.cfs = self.data.arg_max(self.cfs)
+
+        print(self.data.torch_to_df(self.cfs))
+
+        if posthoc:
+
+            self.do_posthoc_sparsity_enhancement()
 
         if output == 'df':
             self.cfs = self.data.torch_to_df(self.cfs)
@@ -175,6 +179,21 @@ class Dice:
             enc_length = self.data.enc_length
             for cf in self.cfs:
                 original_class = torch.round(self.classifier(cf))
+
+                # CAT VARIABLES
+                copy = torch.clone(cf)
+                index = 0
+                for feature in range(len(enc_length)):
+                    class_instance = self.x[index:index + enc_length[feature]]
+                    # what if we insert de original class??
+                    copy[index:index + enc_length[feature]] = class_instance
+                    new_prediction = torch.round(self.classifier(copy))
+                    if new_prediction != original_class:
+                        cf[index:index + enc_length[feature]] = class_instance
+
+                    index += enc_length[feature]
+
+                # CONT VARIABLES
                 copy = torch.clone(cf)
                 for i in self.cont_indices:
                     for new_value in np.arange(cf[i].detach().cpu().numpy(), self.x[i].detach().cpu().numpy(), 0.01):
@@ -186,14 +205,4 @@ class Dice:
                         prev_value = new_value
                     cf[i] = copy[i]
 
-                copy = torch.clone(cf)
-                index = 0
-                for feature in range(len(enc_length)):
-                    class_instance = cf[index:index + enc_length[feature]]
-                    # what if we insert de original class??
-                    copy[index:index + enc_length[feature]] = class_instance
-                    new_prediction = torch.round(self.classifier(copy))
-                    if new_prediction == original_class:
-                        cf[index:index + enc_length[feature]] = class_instance
 
-                    index += enc_length[feature]
