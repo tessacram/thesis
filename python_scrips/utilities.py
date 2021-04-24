@@ -11,7 +11,8 @@ class CFUtilities:
         self.exp = exp
         self.d = d
 
-    def generate_cfs(self, data, exp=None, n_cfs=5):
+    def generate_cfs(self, data, exp=None, n_cfs=5, lr=0.01, max_iterations=1001, distance_weight=0.5,
+                     diversity_weight=1, reg_weight=0.1):
 
         if exp is not None:
             self.exp = exp
@@ -45,7 +46,9 @@ class CFUtilities:
             # print('percentage: ' + str(round(n_instance * 100 / n_instances, 2)) + '%')
 
             x = instances[n_instance]
-            cfs[n_instance] = self.exp.generate_cfs(x, total_cfs=n_cfs)
+            cfs[n_instance] = self.exp.generate_cfs(x, total_cfs=n_cfs, lr=lr, max_iterations=max_iterations,
+                                                    distance_weight=distance_weight, diversity_weight=diversity_weight,
+                                                    reg_weight=reg_weight)
 
             if n_instance % 100 == 0:
                 torch.save(cfs, 'backup_cfs.pt')
@@ -54,7 +57,8 @@ class CFUtilities:
 
         return cfs
 
-    def data_augmentation(self, f_fair, exp=None, n_cfs=3):
+    def data_augmentation(self, f_fair, exp=None, n_cfs=3, lr=0.01, max_iterations=1001, distance_weight=0.5,
+                          diversity_weight=1, reg_weight=0.1):
 
         if exp is not None:
             self.exp = exp
@@ -80,7 +84,9 @@ class CFUtilities:
             # print('percentage: ' + str(round(n_instance * 100 / n_instances, 2)) + '%')
 
             x = instances[n_instance]
-            points = self.exp.generate_cfs(x, total_cfs=n_cfs, f_fair=f_fair)
+            points = self.exp.generate_cfs(x, total_cfs=n_cfs, f_fair=f_fair, lr=lr, max_iterations=max_iterations,
+                                           distance_weight=distance_weight, diversity_weight=diversity_weight,
+                                           reg_weight=reg_weight)
 
             extra_datapoints[n_instance] = points[random.randint(0, 2)]
             targets[n_instance] = abs(self.d.target_torch_train[n_instance] - 1)
