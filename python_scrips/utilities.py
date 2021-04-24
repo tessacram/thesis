@@ -74,7 +74,7 @@ class CFUtilities:
         process = display('Here we go!', display_id=True)
 
         for n_instance in range(n_instances):
-            process.update("instance {} out of {}".format((n_instance + 1), n_instances))
+            process.update('instance {} out of {}'.format((n_instance + 1), n_instances))
             # clear_output(wait=True)
             # print('instance ' + str(n_instance + 1) + '/' + str(n_instances))
             # print('percentage: ' + str(round(n_instance * 100 / n_instances, 2)) + '%')
@@ -90,11 +90,18 @@ class CFUtilities:
 
         # _ = system('clear')
         # clear_output(wait=True)
-        print('Done!')
+        # print('Done!')
 
         return extra_datapoints, targets
 
-    def collect_feedback(self, cfs, instances=None):
+    def collect_feedback(self, cfs, instances=None, exp=None):
+
+        if exp is not None:
+            self.exp = exp
+
+        if self.exp is None:
+            print("Please give me an explanor")
+            return None
 
         if instances is None:
             instances = self.d.data_torch_train

@@ -28,7 +28,7 @@ class Dice:
         self.total_cfs = len(self.cfs)
         self.y_pred_list = None
 
-    def generate_cfs(self, x, total_cfs=3, lr=0.02, max_iterations=201, distance_weight=0.5,
+    def generate_cfs(self, x, total_cfs=3, lr=0.01, max_iterations=1001, distance_weight=0.5,
                      diversity_weight=1, reg_weight=0.1, output='torch', print_progress=False,
                      f_fair=None):
         """ generates counterfactuals
@@ -64,7 +64,6 @@ class Dice:
             self.cfs.data = torch.clamp(self.cfs, 0, 1)
 
             if print_progress and iteration % 100 == 0:
-                print(loss.item())
                 print(round(iteration * 100 / max_iterations, 2), '%  loss:', round(loss.item(), 3))
                 # clear_output(wait=True)
 
@@ -130,7 +129,6 @@ class Dice:
         for i in range(self.total_cfs):
             for j in range(self.total_cfs):
                 K[(i, j)] = 1 / (1 + self.compute_distance(self.cfs[i], self.cfs[j]))
-                    
                 if i == j:
                     K[(i, j)] += 0.0001
 
