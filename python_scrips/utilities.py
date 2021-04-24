@@ -140,7 +140,7 @@ class CFUtilities:
                 pairs[n_pair] = difference
 
                 # check (un)fairness
-                if df['gender'][j] == self.d.data_df_train['gender'][i] and df['race'][j] == self.d.data_df_train['race'][i]:
+                if df['gender'][j] == instances['gender'][i] and df['race'][j] == instances['race'][i]:
                     targets[n_pair] = 0
                     n_fair_cfs += 1
                 else:

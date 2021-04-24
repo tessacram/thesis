@@ -30,16 +30,14 @@ class Dice:
 
     def generate_cfs(self, x, total_cfs=3, lr=0.01, max_iterations=1001, distance_weight=0.5,
                      diversity_weight=1, reg_weight=0.1, output='torch', print_progress=False,
-                     f_fair=None, posthoc=True):
+                     f_fair=None):
         """ generates counterfactuals
-
         input:
         x - this torch instance is asking for cfs!
         total_cfs - the amount of cf's to be generated
         lr - learning rate for optimizer
         max_iterations - number of iterations to find cfs
         weights - weights for the loss function
-
         output:
         couterfactuals in pandas dataframe format """
 
@@ -73,11 +71,7 @@ class Dice:
 
         self.cfs = self.data.arg_max(self.cfs)
 
-        print(self.data.torch_to_df(self.cfs))
-
-        if posthoc:
-
-            self.do_posthoc_sparsity_enhancement()
+        self.do_posthoc_sparsity_enhancement()
 
         if output == 'df':
             self.cfs = self.data.torch_to_df(self.cfs)
@@ -196,6 +190,7 @@ class Dice:
                 # CONT VARIABLES
                 copy = torch.clone(cf)
                 for i in self.cont_indices:
+                    prev_value = copy[i]
                     for new_value in np.arange(cf[i].detach().cpu().numpy(), self.x[i].detach().cpu().numpy(), 0.01):
                         copy[i] = new_value
                         new_prediction = torch.round(self.classifier(copy))
@@ -204,5 +199,3 @@ class Dice:
                             break
                         prev_value = new_value
                     cf[i] = copy[i]
-
-
