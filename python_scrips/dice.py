@@ -167,10 +167,12 @@ class Dice:
 
     def do_posthoc_sparsity_enhancement(self):
         """ Performs a greedy linear search -
-            moves the continuous features in CFs towards original values
+            moves the continuous and categorical features in CFs towards original values
             in query_instance greedily until the prediction class changes. """
 
         with torch.no_grad():
+
+            enc_length = self.data.enc_length
             for cf in self.cfs:
                 original_class = torch.round(self.classifier(cf))
                 copy = torch.clone(cf)
@@ -183,3 +185,15 @@ class Dice:
                             break
                         prev_value = new_value
                     cf[i] = copy[i]
+
+                copy = torch.clone(cf)
+                index = 0
+                for feature in range(len(enc_length)):
+                    class_instance = cf[index:index + enc_length[feature]]
+                    # what if we insert de original class??
+                    copy[index:index + enc_length[feature]] = class_instance
+                    new_prediction = torch.round(self.classifier(copy))
+                    if new_prediction == original_class:
+                        cf[index:index + enc_length[feature]] = class_instance
+
+                    index += enc_length[feature]
