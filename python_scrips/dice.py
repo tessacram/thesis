@@ -171,8 +171,13 @@ class Dice:
         with torch.no_grad():
 
             enc_length = self.data.enc_length
-            for cf in self.cfs:
-                original_class = torch.round(self.classifier(cf))
+            for nr, cf in enumerate(self.cfs):
+
+                original_class = torch.round(self.classifier(self.x))
+                cf_class = torch.round(self.classifier(cf))
+
+                if original_class == cf_class:
+                    self.cfs = torch.cat([self.cfs[:nr], self.cfs[nr+1:]])
 
                 # CAT VARIABLES
                 copy = torch.clone(cf)
@@ -194,7 +199,7 @@ class Dice:
                     for new_value in np.arange(cf[i].detach().cpu().numpy(), self.x[i].detach().cpu().numpy(), 0.01):
                         copy[i] = new_value
                         new_prediction = torch.round(self.classifier(copy))
-                        if new_prediction != original_class:
+                        if new_prediction == original_class:
                             copy[i] = prev_value
                             break
                         prev_value = new_value

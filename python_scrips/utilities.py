@@ -18,7 +18,7 @@ class CFUtilities:
             self.exp = exp
 
         if self.exp is None:
-            print("Please give me an explanor")
+            print("Please give me an explainer")
             return None
 
         self.d = self.exp.data
@@ -64,7 +64,7 @@ class CFUtilities:
             self.exp = exp
 
         if self.exp is None:
-            print("Please give me an explanor")
+            print("Please give me an explainer")
             return None
 
         self.d = self.exp.data
@@ -217,6 +217,6 @@ class ClassifierTraining:
         if print_process:
             print('Test loss after Training', after_train.item())
 
-        print('The accuracy scrore on the test set:', mlp_model.accuracy(y_test_hat, y_test))
+        print('The accuracy score on the test set:', mlp_model.accuracy(y_test_hat, y_test))
 
         return mlp_model
