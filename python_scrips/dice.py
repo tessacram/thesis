@@ -177,7 +177,7 @@ class Dice:
                 cf_class = torch.round(self.classifier(cf))
 
                 if original_class == cf_class:
-                    self.cfs = torch.cat([self.cfs[:nr], self.cfs[nr+1:]])
+                    self.cfs = self.cfs[(nr-1 % self.total_cfs)]
 
                 # CAT VARIABLES
                 copy = torch.clone(cf)
