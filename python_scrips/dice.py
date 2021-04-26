@@ -85,7 +85,7 @@ class Dice:
 
     def initialize_cfs(self):
         """ initializes the cf's with a small perturbation from x """
-        self.cfs = self.x + 0.01 * torch.rand(self.total_cfs, self.n_columns).float().to(self.device)
+        self.cfs = self.x + 1 * torch.rand(self.total_cfs, self.n_columns).float().to(self.device)
         self.cfs.requires_grad = True
 
     def compute_loss(self, distance_weight, diversity_weight, reg_weight, f_fair):
@@ -177,7 +177,8 @@ class Dice:
                 cf_class = torch.round(self.classifier(cf))
 
                 if original_class == cf_class:
-                    self.cfs = self.cfs[(nr-1 % self.total_cfs)]
+                    self.cfs[nr] = torch.zeros(self.n_columns)
+                    continue
 
                 # CAT VARIABLES
                 copy = torch.clone(cf)
@@ -188,7 +189,7 @@ class Dice:
                     copy[index:index + enc_length[feature]] = class_instance
                     new_prediction = torch.round(self.classifier(copy))
                     if new_prediction != original_class:
-                        cf[index:index + enc_length[feature]] = class_instance
+                        self.cfs[nr][index:index + enc_length[feature]] = class_instance
 
                     index += enc_length[feature]
 
@@ -203,4 +204,4 @@ class Dice:
                             copy[i] = prev_value
                             break
                         prev_value = new_value
-                    cf[i] = copy[i]
+                    self.cfs[nr] = copy[i]
