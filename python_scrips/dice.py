@@ -18,7 +18,7 @@ class Dice:
         # INFORMATION ABOUT THE INPUT
         self.x = self.data.data_torch_train[0].to(self.device)
         self.n_columns = self.data.data_torch_train[0].shape[0]
-        self.y = self.classifier(self.x)
+        self.y = torch.round(self.classifier(self.x))
         self.y_pref = 1 - self.y
         self.cont_indices = self.data.cont_indices
         self.mads = torch.from_numpy(self.data.mads)
@@ -30,7 +30,7 @@ class Dice:
 
     def generate_cfs(self, x, total_cfs=3, lr=0.01, max_iterations=1001, distance_weight=0.5,
                      diversity_weight=1, reg_weight=0.1, output='torch', print_progress=False,
-                     f_fair=None):
+                     f_fair=None, post_hoc=True):
         """ generates counterfactuals
         input:
         x - this torch instance is asking for cfs!
@@ -71,7 +71,24 @@ class Dice:
 
         self.cfs = self.data.arg_max(self.cfs)
 
-        self.do_posthoc_sparsity_enhancement()
+        if print_progress:
+            print("\n VOOR SPARCITY ENHANCEMENT")
+            cfs_and_i = torch.cat((self.cfs, self.x.unsqueeze(0)), dim=0)
+            cfs_and_i_df = self.data.torch_to_df(cfs_and_i)
+            self.y_pred_list = self.classifier(cfs_and_i)
+            cfs_and_i_df['target'] = self.y_pred_list.detach().numpy().round()
+            print(cfs_and_i_df)
+
+        if post_hoc:
+            self.do_posthoc_sparsity_enhancement()
+
+        if  print_progress:
+        print("NA SPARCITY ENHANCEMENT")
+        cfs_and_i = torch.cat((self.cfs, self.x.unsqueeze(0)), dim=0)
+        cfs_and_i_df = self.data.torch_to_df(cfs_and_i)
+        self.y_pred_list = self.classifier(cfs_and_i)
+        cfs_and_i_df['target'] = self.y_pred_list.detach().numpy().round()
+        print(cfs_and_i_df)
 
         if output == 'df':
             self.cfs = self.data.torch_to_df(self.cfs)
@@ -173,35 +190,38 @@ class Dice:
             enc_length = self.data.enc_length
             for nr, cf in enumerate(self.cfs):
 
-                original_class = torch.round(self.classifier(self.x))
+                instance_class = self.y
                 cf_class = torch.round(self.classifier(cf))
 
-                if original_class == cf_class:
+                if instance_class == cf_class:
+                    print("verkeerde cf gevonden, nr {}".format(nr))
                     self.cfs[nr] = torch.zeros(self.n_columns)
                     continue
 
                 # CAT VARIABLES
-                copy = torch.clone(cf)
+                copy = torch.clone(cf).detach()
                 index = 0
                 for feature in range(len(enc_length)):
                     class_instance = self.x[index:index + enc_length[feature]]
                     # what if we insert de original class??
                     copy[index:index + enc_length[feature]] = class_instance
                     new_prediction = torch.round(self.classifier(copy))
-                    if new_prediction != original_class:
+                    if new_prediction != instance_class:
                         self.cfs[nr][index:index + enc_length[feature]] = class_instance
 
                     index += enc_length[feature]
 
                 # CONT VARIABLES
-                copy = torch.clone(cf)
+                copy = torch.clone(cf).detach()
                 for i in self.cont_indices:
                     prev_value = copy[i]
-                    for new_value in np.arange(cf[i].detach().cpu().numpy(), self.x[i].detach().cpu().numpy(), 0.01):
+                    old_value = cf[i].detach().cpu().numpy()
+                    instance_value = self.x[i].detach().cpu().numpy()
+                    for new_value in np.arange(old_value, instance_value, 0.01):
                         copy[i] = new_value
                         new_prediction = torch.round(self.classifier(copy))
-                        if new_prediction == original_class:
+                        if new_prediction == instance_class:
                             copy[i] = prev_value
                             break
                         prev_value = new_value
-                    self.cfs[nr] = copy[i]
+                    self.cfs[nr][i] = copy[i]

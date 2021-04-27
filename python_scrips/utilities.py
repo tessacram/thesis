@@ -86,7 +86,7 @@ class CFUtilities:
             x = instances[n_instance]
             points = self.exp.generate_cfs(x, total_cfs=n_cfs, f_fair=f_fair, lr=lr, max_iterations=max_iterations,
                                            distance_weight=distance_weight, diversity_weight=diversity_weight,
-                                           reg_weight=reg_weight)
+                                           reg_weight=reg_weight, post_hoc=False)
 
             extra_datapoints[n_instance] = points[random.randint(0, 2)]
             targets[n_instance] = abs(self.d.target_torch_train[n_instance] - 1)
