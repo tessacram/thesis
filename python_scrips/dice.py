@@ -103,7 +103,7 @@ class Dice:
 
     def initialize_cfs(self):
         """ initializes the cf's with a small perturbation from x """
-        self.cfs = self.x + 0.1 * torch.rand(self.total_cfs, self.n_columns).float().to(self.device)
+        self.cfs = torch.rand(self.total_cfs, self.n_columns).float().to(self.device)
         self.cfs.requires_grad = True
 
     def compute_loss(self, distance_weight, diversity_weight, reg_weight, f_fair):

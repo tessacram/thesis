@@ -53,7 +53,7 @@ class CFUtilities:
             if n_instance % 100 == 0:
                 torch.save(cfs, 'backup_cfs.pt')
         # clear_output(wait=True)
-        print('Done!')
+        # print('Done!')
 
         return cfs
 
@@ -106,7 +106,7 @@ class CFUtilities:
             self.exp = exp
 
         if self.exp is None:
-            print("Please give me an explanor")
+            print("Please give me an explainer")
             return None
 
         if instances is None:
@@ -132,12 +132,12 @@ class CFUtilities:
 
         for i in range(n_instances):
 
-            cfs[i] = self.d.arg_max(cfs[i])
+            # cfs[i] = self.d.arg_max(cfs[i])
             df = self.d.torch_to_df(cfs[i])
 
             for j in range(cfs_per_instance):
-                if sum(cfs[i][j]):
-                    print("ik heb een cf vol met nullen gevonden!")
+                if sum(cfs[i][j]) == 0:
+                    # print("ik heb een cf vol met nullen gevonden!")
                     continue
 
                 # create pairs
