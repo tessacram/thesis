@@ -195,7 +195,7 @@ class Dice:
                 cf_class = torch.round(self.y_pred_list[nr])
 
                 if instance_class == cf_class:
-                    print("verkeerde cf gevonden, nr {}".format(nr))
+                    # print("verkeerde cf gevonden, nr {}".format(nr))
                     self.cfs[nr] = torch.zeros(self.n_columns)
                     continue
 

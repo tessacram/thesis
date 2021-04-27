@@ -136,6 +136,9 @@ class CFUtilities:
             df = self.d.torch_to_df(cfs[i])
 
             for j in range(cfs_per_instance):
+                if sum(cfs[i][j]):
+                    print("ik heb een cf vol met nullen gevonden!")
+                    continue
 
                 # create pairs
                 difference = cfs[i][j] - instances[i]
