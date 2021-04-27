@@ -29,7 +29,7 @@ class Dice:
         self.y_pred_list = None
 
     def generate_cfs(self, x, total_cfs=3, lr=0.01, max_iterations=1001, distance_weight=0.5,
-                     diversity_weight=1, reg_weight=0.1, output='torch', print_progress=False,
+                     diversity_weight=1, reg_weight=0.1, output='torch', print_process=False,
                      f_fair=None, post_hoc=True):
         """ generates counterfactuals
         input:
@@ -61,7 +61,7 @@ class Dice:
 
             self.cfs.data = torch.clamp(self.cfs, 0, 1)
 
-            if print_progress and iteration % 100 == 0:
+            if print_process and iteration % 100 == 0:
                 print(round(iteration * 100 / max_iterations, 2), '%  loss:', round(loss.item(), 3))
                 # clear_output(wait=True)
 
@@ -72,7 +72,7 @@ class Dice:
         self.cfs = self.data.arg_max(self.cfs)
         self.y_pred_list = self.classifier(self.cfs)
 
-        if print_progress:
+        if print_process:
             print("\n VOOR SPARCITY ENHANCEMENT")
             cfs_and_i = torch.cat((self.cfs, self.x.unsqueeze(0)), dim=0)
             cfs_and_i_df = self.data.torch_to_df(cfs_and_i)
@@ -83,7 +83,7 @@ class Dice:
         if post_hoc:
             self.do_posthoc_sparsity_enhancement()
 
-        if print_progress:
+        if print_process:
             print("NA SPARCITY ENHANCEMENT")
             cfs_and_i = torch.cat((self.cfs, self.x.unsqueeze(0)), dim=0)
             cfs_and_i_df = self.data.torch_to_df(cfs_and_i)

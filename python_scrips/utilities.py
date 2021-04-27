@@ -12,7 +12,7 @@ class CFUtilities:
         self.d = d
 
     def generate_cfs(self, data, exp=None, n_cfs=5, lr=0.01, max_iterations=1001, distance_weight=0.5,
-                     diversity_weight=1, reg_weight=0.1, print_progress=False):
+                     diversity_weight=1, reg_weight=0.1, print_process=False):
 
         if exp is not None:
             self.exp = exp
@@ -48,7 +48,7 @@ class CFUtilities:
             x = instances[n_instance]
             cfs[n_instance] = self.exp.generate_cfs(x, total_cfs=n_cfs, lr=lr, max_iterations=max_iterations,
                                                     distance_weight=distance_weight, diversity_weight=diversity_weight,
-                                                    reg_weight=reg_weight, print_progress=print_progress)
+                                                    reg_weight=reg_weight, print_process=print_process)
 
             if n_instance % 100 == 0:
                 torch.save(cfs, 'backup_cfs.pt')
