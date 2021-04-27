@@ -70,6 +70,7 @@ class Dice:
             optimizer.zero_grad()
 
         self.cfs = self.data.arg_max(self.cfs)
+        self.y_pred_list = self.classifier(self.cfs)
 
         if print_progress:
             print("\n VOOR SPARCITY ENHANCEMENT")
@@ -82,13 +83,13 @@ class Dice:
         if post_hoc:
             self.do_posthoc_sparsity_enhancement()
 
-        if  print_progress:
-        print("NA SPARCITY ENHANCEMENT")
-        cfs_and_i = torch.cat((self.cfs, self.x.unsqueeze(0)), dim=0)
-        cfs_and_i_df = self.data.torch_to_df(cfs_and_i)
-        self.y_pred_list = self.classifier(cfs_and_i)
-        cfs_and_i_df['target'] = self.y_pred_list.detach().numpy().round()
-        print(cfs_and_i_df)
+        if print_progress:
+            print("NA SPARCITY ENHANCEMENT")
+            cfs_and_i = torch.cat((self.cfs, self.x.unsqueeze(0)), dim=0)
+            cfs_and_i_df = self.data.torch_to_df(cfs_and_i)
+            self.y_pred_list = self.classifier(cfs_and_i)
+            cfs_and_i_df['target'] = self.y_pred_list.detach().numpy().round()
+            print(cfs_and_i_df)
 
         if output == 'df':
             self.cfs = self.data.torch_to_df(self.cfs)
@@ -191,7 +192,7 @@ class Dice:
             for nr, cf in enumerate(self.cfs):
 
                 instance_class = self.y
-                cf_class = torch.round(self.classifier(cf))
+                cf_class = torch.round(self.y_pred_list[nr])
 
                 if instance_class == cf_class:
                     print("verkeerde cf gevonden, nr {}".format(nr))
