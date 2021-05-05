@@ -61,8 +61,8 @@ class Dice:
 
             self.cfs.data = torch.clamp(self.cfs, 0, 1)
 
-            if print_process and iteration % 100 == 0:
-                print(round(iteration * 100 / max_iterations, 2), '%  loss:', round(loss.item(), 3))
+            # if print_process and iteration % 100 == 0:
+            #     print(round(iteration * 100 / max_iterations, 2), '%  loss:', round(loss.item(), 3))
                 # clear_output(wait=True)
 
             iteration += 1

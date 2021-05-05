@@ -58,7 +58,7 @@ class CFUtilities:
         return cfs
 
     def data_augmentation(self, f_fair, exp=None, n_cfs=3, lr=0.01, max_iterations=1001, distance_weight=0.5,
-                          diversity_weight=1, reg_weight=0.1):
+                          diversity_weight=1, reg_weight=0.1, print_process=False, post_hoc=False):
 
         if exp is not None:
             self.exp = exp
@@ -86,7 +86,7 @@ class CFUtilities:
             x = instances[n_instance]
             points = self.exp.generate_cfs(x, total_cfs=n_cfs, f_fair=f_fair, lr=lr, max_iterations=max_iterations,
                                            distance_weight=distance_weight, diversity_weight=diversity_weight,
-                                           reg_weight=reg_weight, post_hoc=False)
+                                           reg_weight=reg_weight, post_hoc=post_hoc, print_process=print_process)
 
             extra_datapoints[n_instance] = points[random.randint(0, 2)]
             targets[n_instance] = abs(self.d.target_torch_train[n_instance] - 1)
