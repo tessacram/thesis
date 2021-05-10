@@ -100,6 +100,25 @@ class CFUtilities:
 
         return extra_datapoints, targets
 
+    def data_augmentation_baseline(self, exp=None):
+
+        if exp is not None:
+            self.exp = exp
+
+        if self.exp is None:
+            print("Please give me an explainer")
+            return None
+
+        self.d = self.exp.data
+        instances = self.d.data_df_train
+        targets = self.d.target_df_train
+
+        instances['gender'] = instances['gender'].replace(['Male'], 'placeholder')
+        instances['gender'] = instances['gender'].replace(['Female'], 'Male')
+        instances['gender'] = instances['gender'].replace(['placeholder'], 'Female')
+
+        return instances, targets
+
     def collect_feedback(self, cfs, instances=None, exp=None):
 
         if exp is not None:
@@ -158,7 +177,7 @@ class CFUtilities:
 
 class ClassifierTraining:
 
-    def __init__(self, hidden_dim = 100):
+    def __init__(self, hidden_dim=100):
 
         self.hidden_dim = hidden_dim
 
