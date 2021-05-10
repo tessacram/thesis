@@ -111,13 +111,15 @@ class CFUtilities:
 
         self.d = self.exp.data
         instances = self.d.data_df_train
-        targets = self.d.target_df_train
+        targets = self.d.target_torch_train
 
         instances['gender'] = instances['gender'].replace(['Male'], 'placeholder')
         instances['gender'] = instances['gender'].replace(['Female'], 'Male')
         instances['gender'] = instances['gender'].replace(['placeholder'], 'Female')
 
-        return instances, targets
+        instances_torch = self.d.df_to_torch(instances)
+
+        return instances_torch, targets
 
     def collect_feedback(self, cfs, instances=None, exp=None):
 
