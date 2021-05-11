@@ -110,12 +110,16 @@ class CFUtilities:
             return None
 
         self.d = self.exp.data
-        instances = self.d.data_df_train
-        targets = self.d.target_torch_train
+        instances = self.d.data_df_train.copy()
+        targets = self.d.target_torch_train.copy()
 
-        instances['gender'] = instances['gender'].replace(['Male'], 'placeholder')
-        instances['gender'] = instances['gender'].replace(['Female'], 'Male')
-        instances['gender'] = instances['gender'].replace(['placeholder'], 'Female')
+        # instances['gender'] = instances['gender'].replace(['Male'], 'placeholder')
+        # instances['gender'] = instances['gender'].replace(['Female'], 'Male')
+        # instances['gender'] = instances['gender'].replace(['placeholder'], 'Female')
+
+        instances.loc[:, 'gender'] = instances['gender'].replace(['Male'], 'placeholder')
+        instances.loc[:, 'gender'] = instances['gender'].replace(['Female'], 'Male')
+        instances.loc[:, 'gender'] = instances['gender'].replace(['placeholder'], 'Female')
 
         instances_torch = self.d.df_to_torch(instances)
 
@@ -130,6 +134,8 @@ class CFUtilities:
             print("Please give me an explainer")
             return None
 
+        self.d = self.exp.data
+
         if instances is None:
             instances = self.d.data_torch_train
 
@@ -140,9 +146,9 @@ class CFUtilities:
 
         instances_df = self.d.torch_to_df(instances)
 
+        n_instances = cfs.shape[0]
         cfs_per_instance = cfs.shape[1]
         n_features = cfs.shape[2]
-        n_instances = len(instances)
         n_pairs = n_instances * cfs_per_instance
 
         n_pair = 0
