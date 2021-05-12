@@ -134,10 +134,10 @@ class CFUtilities:
 
         if instances == 'train':
             instances = self.d.data_torch_train
-            instances_df = self.d.data_df_train
         if instances == 'test':
             instances = self.d.data_torch_test
-            instances_df = self.d.data_df_test
+
+        instances_df = self.d.torch_to_df(instances)
 
         n_instances = cfs.shape[0]
         cfs_per_instance = cfs.shape[1]
@@ -154,8 +154,6 @@ class CFUtilities:
         for i in range(n_instances):
 
             df = self.d.torch_to_df(cfs[i])
-
-            print(df)
 
             for j in range(cfs_per_instance):
                 if sum(cfs[i][j]) == 0:
