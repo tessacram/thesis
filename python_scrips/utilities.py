@@ -100,18 +100,11 @@ class CFUtilities:
 
         return extra_datapoints, targets
 
-    def data_augmentation_baseline(self, exp=None):
+    def data_augmentation_baseline(self, data):
 
-        if exp is not None:
-            self.exp = exp
-
-        if self.exp is None:
-            print("Please give me an explainer")
-            return None
-
-        self.d = self.exp.data
+        self.d = data
         instances = self.d.data_df_train.copy()
-        targets = self.d.target_torch_train.copy()
+        targets = self.d.target_torch_train.clone()
 
         # instances['gender'] = instances['gender'].replace(['Male'], 'placeholder')
         # instances['gender'] = instances['gender'].replace(['Female'], 'Male')
