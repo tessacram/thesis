@@ -134,15 +134,16 @@ class CFUtilities:
 
         if instances == 'train':
             instances = self.d.data_torch_train
+            instances_df = self.d.data_df_train
         if instances == 'test':
             instances = self.d.data_torch_test
-
-        instances_df = self.d.torch_to_df(instances)
+            instances_df = self.d.data_df_test
 
         n_instances = cfs.shape[0]
         cfs_per_instance = cfs.shape[1]
         n_features = cfs.shape[2]
         n_pairs = n_instances * cfs_per_instance
+        n_pairs_real = 0
 
         n_pair = 0
         pairs = torch.zeros((n_pairs, n_features))
@@ -152,28 +153,33 @@ class CFUtilities:
 
         for i in range(n_instances):
 
-            # cfs[i] = self.d.arg_max(cfs[i])
             df = self.d.torch_to_df(cfs[i])
+
+            print(df)
 
             for j in range(cfs_per_instance):
                 if sum(cfs[i][j]) == 0:
+                    # print("cf {} doet niet mee".format(j))
                     # print("ik heb een cf vol met nullen gevonden!")
                     continue
 
                 # create pairs
                 difference = cfs[i][j] - instances[i]
                 pairs[n_pair] = difference
+                n_pairs_real += 1
 
                 # check (un)fairness
                 if df['gender'][j] == instances_df['gender'][i] and df['race'][j] == instances_df['race'][i]:
                     targets[n_pair] = 0
                     n_fair_cfs += 1
+                    # print("cf {} is eerlijk".format(j))
                 else:
                     targets[n_pair] = 1
+                    # print("cf {} is oneerlijk".format(j))
 
                 n_pair += 1
 
-        return pairs, targets, (n_fair_cfs/n_pairs)
+        return pairs[:n_pairs_real, :], targets[:n_pairs_real], (n_fair_cfs/n_pairs_real)
 
 
 class ClassifierTraining:
