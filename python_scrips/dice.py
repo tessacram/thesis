@@ -114,7 +114,7 @@ class Dice:
                    diversity_weight * self.compute_diversity_loss() + \
                    reg_weight * self.compute_regularisation_loss()
         else:
-            return self.compute_fair_loss(f_fair) + \
+            return -1 * self.compute_fair_loss(f_fair) + \
                    distance_weight * self.compute_distance_loss() - \
                    diversity_weight * self.compute_diversity_loss() + \
                    reg_weight * self.compute_regularisation_loss()
@@ -150,7 +150,7 @@ class Dice:
 
         return torch.det(K)
 
-    def compute_fair_loss(self, f_fair):  # gebruik hinge loss
+    def compute_fair_loss(self, f_fair):  # use hinge loss
         # loss = 0
         # for i in range(self.total_cfs):
         #     difference = self.cfs[i] - self.x

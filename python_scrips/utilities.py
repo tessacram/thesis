@@ -168,11 +168,11 @@ class CFUtilities:
 
                 # check (un)fairness
                 if df['gender'][j] == instances_df['gender'][i] and df['race'][j] == instances_df['race'][i]:
-                    targets[n_pair] = 0
+                    targets[n_pair] = 1
                     n_fair_cfs += 1
                     # print("cf {} is eerlijk".format(j))
                 else:
-                    targets[n_pair] = 1
+                    targets[n_pair] = 0
                     # print("cf {} is oneerlijk".format(j))
 
                 n_pair += 1
