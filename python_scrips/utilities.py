@@ -88,8 +88,10 @@ class CFUtilities:
                                            distance_weight=distance_weight, diversity_weight=diversity_weight,
                                            reg_weight=reg_weight, post_hoc=post_hoc, print_process=print_process)
 
+            fairness_scores = f_fair(points)
+            extra_datapoints[n_instance] = points[torch.argmin(fairness_scores)]
             extra_datapoints[n_instance] = points[random.randint(0, 2)]
-            targets[n_instance] = abs(self.d.target_torch_train[n_instance] - 1)
+            targets[n_instance] = self.d.target_torch_train[n_instance]
 
             if n_instance % 100 == 0:
                 torch.save(extra_datapoints, 'backup_data_augmentation.pt')
