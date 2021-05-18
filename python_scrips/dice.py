@@ -115,7 +115,7 @@ class Dice:
                    reg_weight * self.compute_regularisation_loss()
         else:
             return -1 * self.compute_fair_loss(f_fair) + \
-                   distance_weight * self.compute_distance_loss() - \
+                   distance_weight * self.compute_distance_loss() + \
                    reg_weight * self.compute_regularisation_loss()
 
     def compute_y_loss(self):

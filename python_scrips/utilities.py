@@ -40,11 +40,10 @@ class CFUtilities:
         process = display('Here we go!', display_id=True)
 
         for n_instance in range(n_instances):
-            for n_instance in range(n_instances):
-                if n_instance < 3:
-                    print_process = True
-                else:
-                    print_process = False
+            if n_instance < 3:
+                print_process = True
+            else:
+                print_process = False
             process.update("instance {} out of {}".format((n_instance + 1), n_instances))
             # clear_output(wait=True)
             # print('instance ' + str(n_instance + 1) + '/' + str(n_instances))
@@ -62,7 +61,7 @@ class CFUtilities:
 
         return cfs
 
-    def data_augmentation(self, f_fair, exp=None, n_cfs=3, lr=0.01, max_iterations=1001, distance_weight=0.5,
+    def data_augmentation(self, f_fair, exp=None, n_cfs=2, lr=0.01, max_iterations=1001, distance_weight=0.5,
                           diversity_weight=1, reg_weight=0.1, print_process=False, post_hoc=False):
 
         if exp is not None:
@@ -93,13 +92,13 @@ class CFUtilities:
             # print('percentage: ' + str(round(n_instance * 100 / n_instances, 2)) + '%')
 
             x = instances[n_instance]
-            points = self.exp.generate_cfs(x, total_cfs=2, f_fair=f_fair, lr=lr, max_iterations=max_iterations,
+            points = self.exp.generate_cfs(x, total_cfs=n_cfs, f_fair=f_fair, lr=lr, max_iterations=max_iterations,
                                            distance_weight=distance_weight, diversity_weight=diversity_weight,
                                            reg_weight=reg_weight, post_hoc=post_hoc, print_process=print_process)
 
             # fairness_scores = f_fair(points)
             # extra_datapoints[n_instance] = points[torch.argmin(fairness_scores)]
-            extra_datapoints[n_instance] = points[random.randint(0, 2)]
+            extra_datapoints[n_instance] = points[random.randint(0, n_cfs-1)]
             targets[n_instance] = self.d.target_torch_train[n_instance]
 
             if n_instance % 100 == 0:
