@@ -41,7 +41,7 @@ class CFUtilities:
 
         for n_instance in range(n_instances):
             for n_instance in range(n_instances):
-                if n_instance > 3:
+                if n_instance < 3:
                     print_process = True
                 else:
                     print_process = False
@@ -83,7 +83,7 @@ class CFUtilities:
         process = display('Here we go!', display_id=True)
 
         for n_instance in range(n_instances):
-            if n_instance > 3:
+            if n_instance < 3:
                 print_process = True
             else:
                 print_process = False
