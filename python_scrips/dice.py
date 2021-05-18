@@ -72,19 +72,19 @@ class Dice:
         self.cfs = self.data.arg_max(self.cfs)
         self.y_pred_list = self.classifier(self.cfs)
 
-        if print_process:
-            print("\n VOOR SPARCITY ENHANCEMENT")
-            cfs_and_i = torch.cat((self.cfs, self.x.unsqueeze(0)), dim=0)
-            cfs_and_i_df = self.data.torch_to_df(cfs_and_i)
-            self.y_pred_list = self.classifier(cfs_and_i)
-            cfs_and_i_df['target'] = self.y_pred_list.detach().numpy().round()
-            print(cfs_and_i_df)
+        # if print_process:
+        #     print("\n VOOR SPARCITY ENHANCEMENT")
+        #     cfs_and_i = torch.cat((self.cfs, self.x.unsqueeze(0)), dim=0)
+        #     cfs_and_i_df = self.data.torch_to_df(cfs_and_i)
+        #     self.y_pred_list = self.classifier(cfs_and_i)
+        #     cfs_and_i_df['target'] = self.y_pred_list.detach().numpy().round()
+        #     print(cfs_and_i_df)
 
         if post_hoc:
             self.do_posthoc_sparsity_enhancement()
 
         if print_process:
-            print("NA SPARCITY ENHANCEMENT")
+            print("THREE CF'S AND THE INSTANCE")
             cfs_and_i = torch.cat((self.cfs, self.x.unsqueeze(0)), dim=0)
             cfs_and_i_df = self.data.torch_to_df(cfs_and_i)
             self.y_pred_list = self.classifier(cfs_and_i)
@@ -116,7 +116,6 @@ class Dice:
         else:
             return -1 * self.compute_fair_loss(f_fair) + \
                    distance_weight * self.compute_distance_loss() - \
-                   diversity_weight * self.compute_diversity_loss() + \
                    reg_weight * self.compute_regularisation_loss()
 
     def compute_y_loss(self):
