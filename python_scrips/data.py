@@ -186,16 +186,25 @@ class Income(Data):
 
 class Compas(Data):
 
-    def __init__(self, frac_train=0.75, total_instances=None, path="/Users/tessa/Documents/artificial_intelligence/thesis/learning_to_be_fair/fresh_start/data/compas_data_clean.csv"):
+    def __init__(self, frac_train=0.75, total_instances=None, path="/Users/tessa/Documents/artificial_intelligence/thesis/learning_to_be_fair/fresh_start/data/compas_data_clean.csv", balanced=False):
 
         df = pd.read_csv(path)
         df = df.rename(columns={"sex": "gender"})
-        self.data_df = df.drop(columns=['Unnamed: 0'])
-        self.data_df = self.data_df.sample(frac=1, random_state=1).reset_index(drop=True)
+        data_df = df.drop(columns=['Unnamed: 0'])
+        if balanced:
+            df1 = data_df[(data_df.gender == 'Male') & (data_df.is_recid == 0)].reset_index(drop=True)
+            df2 = data_df[(data_df.gender == 'Male') & (data_df.is_recid == 1)].reset_index(drop=True)
+            df3 = data_df[(data_df.gender == 'Female') & (data_df.is_recid == 0)].reset_index(drop=True)
+            df4 = data_df[(data_df.gender == 'Female') & (data_df.is_recid == 1)].reset_index(drop=True)
+            sizes = [len(df1), len(df2), len(df3), len(df4)]
+            smallest = min(sizes)
+            merged = [df1.iloc[:smallest, :], df2.iloc[:smallest, :], df3.iloc[:smallest, :], df4.iloc[:smallest, :]]
+            data_df = pd.concat(merged).reset_index(drop=True)
+        data_df = data_df.sample(frac=1, random_state=1).reset_index(drop=True)
         if total_instances is not None:
-            self.data_df = self.data_df.iloc[0:total_instances, :]
+            data_df = data_df.iloc[0:total_instances, :]
         self.cont_indices = [1, 3]
-        super().__init__(self.data_df, self.cont_indices, frac_train=frac_train)
+        super().__init__(data_df, self.cont_indices, frac_train=frac_train)
 
 
 class Import(Data):

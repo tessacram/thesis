@@ -128,7 +128,7 @@ class CFUtilities:
 
         return instances_torch, targets
 
-    def collect_feedback(self, cfs, instances=None, exp=None):
+    def collect_feedback(self, cfs, instances=None, exp=None, design='difference'):
 
         if exp is not None:
             self.exp = exp
@@ -156,7 +156,10 @@ class CFUtilities:
         n_pairs_real = 0
 
         n_pair = 0
-        pairs = torch.zeros((n_pairs, n_features))
+        if design == 'difference':
+            pairs = torch.zeros((n_pairs, n_features))
+        else:
+            pairs = torch.zeros((n_pairs, n_features*2))
         targets = torch.zeros(n_pairs)
 
         n_fair_cfs = 0
@@ -170,11 +173,16 @@ class CFUtilities:
                     # print("cf {} doet niet mee".format(j))
                     # print("ik heb een cf vol met nullen gevonden!")
                     continue
+                n_pairs_real += 1
 
                 # create pairs
-                difference = cfs[i][j] - instances[i]
-                pairs[n_pair] = difference
-                n_pairs_real += 1
+                if design == 'difference':
+                    pair = cfs[i][j] - instances[i]
+                else:
+                    pair = torch.cat((instances[i], cfs[i][j]))
+
+                pairs[n_pair] = pair
+
 
                 # check (un)fairness
                 if df['gender'][j] == instances_df['gender'][i] and df['race'][j] == instances_df['race'][i]:
